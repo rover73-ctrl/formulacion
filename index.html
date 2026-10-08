@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Plataforma de estudio y autoevaluación interactiva sobre Formulación y Evaluación de Proyectos por Gabriel Baca Urbina. Lecturas completas y cuestionarios de opción múltiple para Estudio de Mercado, Estudio Técnico, Estudio Económico y Elementos Conceptuales.">
+  <meta name="keywords" content="Evaluación de proyectos, Estudio de mercado, Estudio técnico, Estudio económico, Gabriel Baca Urbina, Cuestionarios, Examen, Punto de equilibrio, TMAR, Muestreo">
+  <meta name="author" content="Plataforma Educativa de Proyectos">
+  <title>Formulación y Evaluación de Proyectos - Plataforma de Estudio y Cuestionarios</title>
+
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- MathJax 3 para renderizar fórmulas matemáticas LaTeX -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)'], ['$', '$']],
+        displayMath: [['\\[', '\\]'], ['$$', '$$']],
+        processEscapes: true
+      },
+      svg: {
+        fontCache: 'global'
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+  <!-- Estilos del Sistema de Diseño -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Canvas para animación de confeti -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="app-container">
+    <!-- Barra Lateral de Navegación (Sidebar) -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <i class="fas fa-layer-group"></i>
+        </div>
+        <div>
+          <h2 class="brand-title">Proyectos</h2>
+          <span class="brand-subtitle">Baca Urbina &bull; Guía</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <span class="nav-label">Navegación Principal</span>
+        <a class="nav-item active" data-view="dashboard" id="nav-dash">
+          <i class="fas fa-th-large"></i>
+          <span>Tablero de Estudio</span>
+        </a>
+
+        <span class="nav-label">Banco de Reactivos</span>
+        <a class="nav-item" data-view="master-bank" id="nav-master">
+          <i class="fas fa-tasks" style="color: #f43f5e;"></i>
+          <span>Banco Maestro (148Q)</span>
+          <span class="nav-badge" style="background: rgba(244, 63, 94, 0.2); color: #fb7185;">Completo</span>
+        </a>
+
+        <span class="nav-label">Capítulos de Estudio</span>
+        <a class="nav-item" data-view="chapter" data-chapter="cap1" id="nav-cap1">
+          <i class="fas fa-project-diagram" style="color: #38bdf8;"></i>
+          <span>1. Conceptos Básicos</span>
+          <span class="nav-badge">54 Q</span>
+        </a>
+        <a class="nav-item" data-view="chapter" data-chapter="cap2" id="nav-cap2">
+          <i class="fas fa-chart-line" style="color: #10b981;"></i>
+          <span>2. Estudio de Mercado</span>
+          <span class="nav-badge">30 Q</span>
+        </a>
+        <a class="nav-item" data-view="chapter" data-chapter="cap3" id="nav-cap3">
+          <i class="fas fa-cogs" style="color: #8b5cf6;"></i>
+          <span>3. Estudio Técnico</span>
+          <span class="nav-badge">17 Q</span>
+        </a>
+        <a class="nav-item" data-view="chapter" data-chapter="cap4" id="nav-cap4">
+          <i class="fas fa-calculator" style="color: #ec4899;"></i>
+          <span>4. Estudio Económico</span>
+          <span class="nav-badge">30 Q</span>
+        </a>
+        <a class="nav-item" data-view="chapter" data-chapter="cap5" id="nav-cap5">
+          <i class="fas fa-leaf" style="color: #14b8a6;"></i>
+          <span>5. Impacto Social & Amb.</span>
+          <span class="nav-badge">17 Q</span>
+        </a>
+
+        <span class="nav-label">Evaluación & Herramientas</span>
+        <a class="nav-item" data-view="global-quiz" id="nav-global">
+          <i class="fas fa-graduation-cap" style="color: #f59e0b;"></i>
+          <span>Simulador Global (20Q)</span>
+        </a>
+        <a class="nav-item" data-view="tools" id="nav-tools">
+          <i class="fas fa-chart-pie" style="color: #06b6d4;"></i>
+          <span>Laboratorio & Gráficos</span>
+        </a>
+        <a class="nav-item" data-view="flashcards" id="nav-cards">
+          <i class="fas fa-clone" style="color: #a855f7;"></i>
+          <span>Tarjetas de Memoria</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-progress-mini">
+          <span class="progress-text" id="sidebar-progress-text">0% Completado</span>
+          <div class="progress-bar-mini">
+            <div class="progress-fill" id="sidebar-progress-fill"></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Contenedor Principal -->
+    <div class="main-wrapper">
+      <!-- Encabezado Superior -->
+      <header class="app-header">
+        <div class="header-left">
+          <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Abrir menú">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h1 class="current-view-title" id="current-view-title">Plataforma de Estudio y Preparación de Proyectos</h1>
+        </div>
+
+        <div class="header-actions">
+          <button class="btn-icon" id="sound-toggle-btn" title="Activar/Silenciar Efectos de Audio" aria-label="Audio">
+            <i class="fas fa-volume-up"></i>
+          </button>
+          <button class="btn-icon" id="theme-toggle-btn" title="Modo Oscuro / Claro" aria-label="Cambiar tema">
+            <i class="fas fa-moon"></i>
+          </button>
+          <button class="btn-header-action btn-header-primary" onclick="startGlobalQuiz()">
+            <i class="fas fa-play"></i>
+            <span>Simulador Examen</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Cuerpo de Contenido -->
+      <main class="content-body">
+        
+        <!-- ================================================================
+             VISTA 1: DASHBOARD
+             ================================================================ -->
+        <section class="view-section active" id="view-dashboard">
+          <!-- Hero Banner Principal con la Imagen Generada -->
+          <div class="hero-banner">
+            <img src="assets/hero.jpg" alt="Evaluación de proyectos ilustración" class="hero-bg-img">
+            <div class="hero-content">
+              <span class="hero-pill">
+                <i class="fas fa-graduation-cap"></i> Metodología Gabriel Baca Urbina
+              </span>
+              <h2 class="hero-title">Aprende, Practica y Domina la Formulación de Proyectos</h2>
+              <p class="hero-desc">
+                Explora las lecturas completas de los cuatro capítulos fundamentales, pon a prueba tus conocimientos con más de 50 preguntas de opción múltiple con explicaciones inmediatas y analiza cálculos con el simulador interactivo.
+              </p>
+              <div class="hero-cta-group">
+                <button class="btn-header-action btn-header-primary" onclick="loadChapter('cap1', 'reading')">
+                  <i class="fas fa-book-open"></i> Comenzar Lectura Capítulo 1
+                </button>
+                <button class="btn-card" onclick="loadChapter('cap2', 'quiz')">
+                  <i class="fas fa-vial"></i> Test de Mercado
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Métricas de Progreso -->
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-icon-wrap" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8;">
+                <i class="fas fa-book-reader"></i>
+              </div>
+              <div>
+                <div class="metric-value" id="metric-read-count">0 / 4</div>
+                <div class="metric-title">Capítulos Leídos</div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-wrap" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+                <i class="fas fa-check-double"></i>
+              </div>
+              <div>
+                <div class="metric-value" id="metric-q-count">0 / 54</div>
+                <div class="metric-title">Preguntas Aprobadas</div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-wrap" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">
+                <i class="fas fa-percentage"></i>
+              </div>
+              <div>
+                <div class="metric-value" id="metric-avg-score">0%</div>
+                <div class="metric-title">Promedio de Aciertos</div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon-wrap" style="background: rgba(236, 72, 153, 0.15); color: #ec4899;">
+                <i class="fas fa-award"></i>
+              </div>
+              <div>
+                <div class="metric-value">4 Módulos</div>
+                <div class="metric-title">Teoría & Casos Reales</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grid de Capítulos -->
+          <div class="section-heading-bar">
+            <h3 class="section-title"><i class="fas fa-folder-open" style="color: var(--accent-cyan); margin-right: 8px;"></i> Módulos y Lecturas del Libro</h3>
+            <span style="font-size: 0.85rem; color: var(--text-muted);">Haz clic en cualquier módulo para leer o evaluar</span>
+          </div>
+
+          <div class="chapters-grid" id="dashboard-chapters-list">
+            <!-- Inyectado dinámicamente por app.js -->
+          </div>
+
+          <!-- Consejos Pedagógicos y Metodología -->
+          <div class="tool-card full-width" style="margin-top: 10px;">
+            <div class="tool-header">
+              <div class="tool-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+              <div>
+                <h4 style="font-size: 1.15rem;">Ruta de Aprendizaje Recomendada</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Sigue esta secuencia para dominar con éxito la formulación y evaluación integral de proyectos:</p>
+              </div>
+            </div>
+            <div class="grid-cards-3">
+              <div class="study-card">
+                <span class="card-tag">Paso 1</span>
+                <h5>Comprensión Teórica</h5>
+                <p>Lee con calma cada sección con los conceptos destacados, las tablas y las fórmulas matemáticas de los capítulos.</p>
+              </div>
+              <div class="study-card">
+                <span class="card-tag">Paso 2</span>
+                <h5>Autoevaluación Inmediata</h5>
+                <p>Resuelve el cuestionario de cada capítulo. Cada reactivo incluye justificación pedagógica detallada para aprender del error.</p>
+              </div>
+              <div class="study-card">
+                <span class="card-tag">Paso 3</span>
+                <h5>Simulación Global</h5>
+                <p>Presenta el examen cronometrado de 20 preguntas aleatorias de los 4 capítulos para certificar tu preparación técnica.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================================================================
+             VISTA: BANCO MAESTRO DE PREGUNTAS (148 REACTIVOS)
+             ================================================================ -->
+        <section class="view-section" id="view-master-bank">
+          <div class="chapter-hero" style="border-left: 4px solid var(--accent-rose);">
+            <div class="mq-header" style="margin-bottom: 8px;">
+              <span class="chapter-badge-tag" style="background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); margin-bottom: 0;">
+                <i class="fas fa-layer-group"></i> Banco Maestro Completo &bull; 148 Reactivos
+              </span>
+              <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fas fa-key"></i> Clave Docente: <code>profesor123</code></span>
+            </div>
+            <h2 class="chapter-main-title">Guía de Estudio con Argumentación Analítica</h2>
+            <p class="chapter-sub-summary">
+              Explora las preguntas de evaluación con su fundamentación técnica y financiera integral según criterios de mercado, técnicos, ambientales y de evaluación económica (VAN, TIR, PRC, PE y Sensibilidad).
+            </p>
+          </div>
+
+          <div class="master-bank-controls">
+            <div class="search-and-actions">
+              <div class="search-box-wrap">
+                <i class="fas fa-search"></i>
+                <input 
+                  type="text" 
+                  id="master-search-input" 
+                  placeholder="Buscar por pregunta, concepto o término clave (ej. VAN, TIR, Muther, monopolio)..." 
+                  oninput="handleMasterSearch(this.value)"
+                >
+              </div>
+
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button id="btn-master-toggle-all" onclick="promptPasswordMaster()" class="btn-card" style="font-size: 0.85rem;">
+                  <i class="fas fa-book-open"></i>
+                  <span id="txt-master-toggle-all">Revelar Respuestas</span>
+                </button>
+                <button onclick="resetMasterQuiz()" class="btn-card" style="color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3); font-size: 0.85rem;">
+                  <i class="fas fa-redo"></i> Reiniciar
+                </button>
+              </div>
+            </div>
+
+            <!-- Filtros por Módulo -->
+            <div class="filter-pills-row" id="master-filter-pills">
+              <button onclick="filterMasterModule('all')" class="pill-filter-btn active" data-mod="all">
+                Todos (148)
+              </button>
+              <button onclick="filterMasterModule('1')" class="pill-filter-btn" data-mod="1">
+                Módulo 1: Fundamentos (32)
+              </button>
+              <button onclick="filterMasterModule('2')" class="pill-filter-btn" data-mod="2">
+                Módulo 2: Metodología & Ciclo (22)
+              </button>
+              <button onclick="filterMasterModule('3')" class="pill-filter-btn" data-mod="3">
+                Módulo 3: Mercado (30)
+              </button>
+              <button onclick="filterMasterModule('4')" class="pill-filter-btn" data-mod="4">
+                Módulo 4: Técnico (17)
+              </button>
+              <button onclick="filterMasterModule('5')" class="pill-filter-btn" data-mod="5">
+                Módulo 5: Financiero (30)
+              </button>
+              <button onclick="filterMasterModule('6')" class="pill-filter-btn" data-mod="6">
+                Módulo 6: Comunidad & Ambiental (17)
+              </button>
+            </div>
+
+            <!-- Barra de Progreso y Estadísticas -->
+            <div class="quiz-track-bar" style="margin-top: 16px; margin-bottom: 12px;">
+              <div class="quiz-track-fill" id="master-progress-fill" style="width: 0%; background: var(--grad-emerald);"></div>
+            </div>
+
+            <div class="master-stats-summary">
+              <div class="master-stat-item">
+                <div class="num" id="master-stat-total">148</div>
+                <div class="lbl">Total Reactivos</div>
+              </div>
+              <div class="master-stat-item">
+                <div class="num" id="master-stat-answered" style="color: var(--accent-cyan);">0</div>
+                <div class="lbl">Respondidas</div>
+              </div>
+              <div class="master-stat-item">
+                <div class="num" id="master-stat-correct" style="color: var(--accent-emerald);">0</div>
+                <div class="lbl">Aciertos</div>
+              </div>
+              <div class="master-stat-item">
+                <div class="num" id="master-stat-wrong" style="color: var(--accent-rose);">0</div>
+                <div class="lbl">Fallos</div>
+              </div>
+              <div class="master-stat-item">
+                <div class="num" id="master-stat-percent" style="color: var(--accent-amber);">0%</div>
+                <div class="lbl">Efectividad</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contenedor Dinámico de Preguntas -->
+          <div id="master-questions-container">
+            <!-- Inyectado dinámicamente por app.js -->
+          </div>
+
+          <div id="master-empty-state" style="display: none; text-align: center; padding: 48px 20px; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px dashed var(--border-subtle);">
+            <i class="fas fa-search" style="font-size: 2.5rem; color: var(--text-dim); margin-bottom: 12px;"></i>
+            <h4>No se encontraron reactivos</h4>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Prueba con otros términos de búsqueda o selecciona otro filtro de módulo.</p>
+            <button class="btn-card primary" style="margin-top: 14px;" onclick="resetMasterFilters()">Restablecer filtros</button>
+          </div>
+        </section>
+
+        <!-- ================================================================
+             VISTA 2: CAPÍTULO (LECTURAS Y CUESTIONARIO)
+             ================================================================ -->
+        <section class="view-section" id="view-chapter">
+          <div class="chapter-hero" id="chapter-hero-content">
+            <!-- Inyectado dinámicamente -->
+          </div>
+
+          <!-- Pestañas de Cambio de Modo -->
+          <div class="module-tabs">
+            <button class="tab-btn active" id="tab-reading-btn">
+              <i class="fas fa-book-reader"></i> Modo Lectura del Archivo
+            </button>
+            <button class="tab-btn" id="tab-quiz-btn">
+              <i class="fas fa-tasks"></i> Cuestionario de Opción Múltiple
+            </button>
+          </div>
+
+          <!-- Panel de Lectura -->
+          <div id="panel-reading">
+            <div class="reading-layout">
+              <aside class="reading-toc">
+                <h4>Índice de la Lectura</h4>
+                <ul class="toc-list" id="reading-toc-list">
+                  <!-- Inyectado dinámicamente -->
+                </ul>
+
+                <div class="reading-controls">
+                  <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 600;">TAMAÑO</span>
+                  <div class="font-size-btn-group">
+                    <button class="btn-mini btn-font-size" data-delta="-1" title="Reducir fuente">A-</button>
+                    <button class="btn-mini btn-font-size" data-delta="0" title="Restablecer fuente">A</button>
+                    <button class="btn-mini btn-font-size" data-delta="1" title="Aumentar fuente">A+</button>
+                  </div>
+                </div>
+
+                <div style="margin-top: 14px;">
+                  <button class="btn-card" style="width: 100%;" onclick="window.print()">
+                    <i class="fas fa-print"></i> Imprimir Lectura
+                  </button>
+                </div>
+              </aside>
+
+              <div class="reading-content-card">
+                <article class="reading-article" id="reading-article-content">
+                  <!-- Contenido de las lecturas inyectado dinámicamente -->
+                </article>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel de Cuestionario -->
+          <div id="panel-quiz" style="display: none;">
+            <div id="chapter-quiz-view">
+              <!-- Inyectado dinámicamente -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ================================================================
+             VISTA 3: SIMULADOR GLOBAL (EXAMEN FINAL)
+             ================================================================ -->
+        <section class="view-section" id="view-global-quiz">
+          <div class="chapter-hero" style="border-left: 4px solid var(--accent-pink);">
+            <span class="chapter-badge-tag" style="background: rgba(236, 72, 153, 0.15); color: var(--accent-pink);">
+              Simulador Integrador Multidisciplinario
+            </span>
+            <h2 class="chapter-main-title">Examen Global de Evaluación de Proyectos</h2>
+            <p class="chapter-sub-summary">
+              20 reactivos seleccionados aleatoriamente entre los cuatro capítulos: Elementos Conceptuales, Estudio de Mercado, Estudio Técnico y Estudio Económico. Temporizador límite de 20 minutos con retroalimentación y certificado final.
+            </p>
+          </div>
+
+          <div id="global-quiz-container">
+            <!-- Inyectado dinámicamente -->
+          </div>
+        </section>
+
+        <!-- ================================================================
+             VISTA 4: LABORATORIO PRÁCTICO & CALCULADORAS
+             ================================================================ -->
+        <section class="view-section" id="view-tools">
+          <div class="chapter-hero" style="border-left: 4px solid var(--accent-cyan);">
+            <span class="chapter-badge-tag" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan);">
+              Herramientas de Cálculo Interactivas
+            </span>
+            <h2 class="chapter-main-title">Laboratorio Numérico de Proyectos</h2>
+            <p class="chapter-sub-summary">
+              Experimenta de forma dinámica con las fórmulas matemáticas oficiales del texto de Gabriel Baca Urbina para Punto de Equilibrio, Tamaño de Muestra y Tasa Mínima Aceptable de Rendimiento (TMAR).
+            </p>
+          </div>
+
+          <div class="tools-grid">
+            <!-- Herramienta 1: Punto de Equilibrio con Gráfico Canvas -->
+            <div class="tool-card">
+              <div class="tool-header">
+                <div class="tool-icon">
+                  <i class="fas fa-balance-scale"></i>
+                </div>
+                <div>
+                  <h4>Calculadora de Punto de Equilibrio</h4>
+                  <span style="font-size: 0.8rem; color: var(--text-dim);">Fórmula: Q = CF / (P - V)</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="be-cf">Costos Fijos Totales ($ CF):</label>
+                <input type="number" id="be-cf" class="form-control" value="2140655" step="1000">
+              </div>
+
+              <div class="form-group">
+                <label for="be-p">Precio de Venta Unitario ($ P):</label>
+                <input type="number" id="be-p" class="form-control" value="12.62" step="0.1">
+              </div>
+
+              <div class="form-group">
+                <label for="be-cv">Costo Variable Unitario ($ V):</label>
+                <input type="number" id="be-cv" class="form-control" value="10.23" step="0.1">
+              </div>
+
+              <div class="calc-output-box">
+                <div class="calc-output-row">
+                  <span>Margen de Contribución (P - V):</span>
+                  <span class="calc-val" id="be-margin-result">$2.39</span>
+                </div>
+                <div class="calc-output-row">
+                  <span>Punto de Equilibrio en Unidades (Q):</span>
+                  <span class="calc-val" id="be-q-result" style="color: #10b981;">895,672 uds</span>
+                </div>
+                <div class="calc-output-row">
+                  <span>Ventas en Punto de Equilibrio ($):</span>
+                  <span class="calc-val" id="be-sales-result" style="color: #38bdf8;">$11,303,380</span>
+                </div>
+              </div>
+
+              <div class="canvas-container">
+                <canvas id="be-canvas"></canvas>
+              </div>
+            </div>
+
+            <!-- Herramienta 2: Tamaño de Muestra para Encuestas -->
+            <div class="tool-card">
+              <div class="tool-header">
+                <div class="tool-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+                  <i class="fas fa-users"></i>
+                </div>
+                <div>
+                  <h4>Cálculo de Tamaño de Muestra (n)</h4>
+                  <span style="font-size: 0.8rem; color: var(--text-dim);">Fórmula: n = (σ² · Z²) / E²</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="sample-z">Nivel de Confianza (Z):</label>
+                <select id="sample-z" class="form-control">
+                  <option value="1.96" selected>95% de confianza (Z = 1.96)</option>
+                  <option value="2.576">99% de confianza (Z = 2.58)</option>
+                  <option value="1.645">90% de confianza (Z = 1.64)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="sample-sigma">Desviación Estándar de la Muestra Piloto (σ):</label>
+                <input type="number" id="sample-sigma" class="form-control" value="0.52" step="0.01">
+                <small style="color: var(--text-dim);">Ejemplo del libro: 0.520 kg de mermelada mensual</small>
+              </div>
+
+              <div class="form-group">
+                <label for="sample-e">Error Máximo Permisible (E):</label>
+                <input type="number" id="sample-e" class="form-control" value="0.05" step="0.01">
+                <small style="color: var(--text-dim);">Margen de tolerancia (ej. 0.05 = 5%)</small>
+              </div>
+
+              <div class="calc-output-box">
+                <div class="calc-output-row">
+                  <span>Tamaño de Muestra Requerido (n):</span>
+                  <span class="calc-val" id="sample-n-result" style="color: #10b981;">416 encuestas</span>
+                </div>
+              </div>
+
+              <!-- Herramienta 3: TMAR con Inflación -->
+              <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border-subtle);">
+                <div class="tool-header" style="margin-bottom: 12px;">
+                  <div class="tool-icon" style="background: rgba(236, 72, 153, 0.15); color: #ec4899;">
+                    <i class="fas fa-percent"></i>
+                  </div>
+                  <div>
+                    <h4>TMAR Individual con Inflación</h4>
+                    <span style="font-size: 0.8rem; color: var(--text-dim);">TMAR = i + f + (i · f)</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="tmar-i">Premio al Riesgo Deseado (i en %):</label>
+                  <input type="number" id="tmar-i" class="form-control" value="10" step="1">
+                </div>
+
+                <div class="form-group">
+                  <label for="tmar-f">Inflación Anual Promedio Pronosticada (f en %):</label>
+                  <input type="number" id="tmar-f" class="form-control" value="12" step="0.5">
+                </div>
+
+                <div class="calc-output-box">
+                  <div class="calc-output-row">
+                    <span>TMAR Exigida por el Inversionista:</span>
+                    <span class="calc-val" id="tmar-result" style="color: #ec4899;">23.20%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================================================================
+             VISTA 5: TARJETAS DE MEMORIA (FLASHCARDS)
+             ================================================================ -->
+        <section class="view-section" id="view-flashcards">
+          <div class="chapter-hero" style="border-left: 4px solid var(--accent-purple);">
+            <span class="chapter-badge-tag" style="background: rgba(139, 92, 246, 0.15); color: var(--accent-purple);">
+              Repaso Rápido Mnemotécnico
+            </span>
+            <h2 class="chapter-main-title">Tarjetas de Conceptos Clave</h2>
+            <p class="chapter-sub-summary">
+              Haz clic en cualquier tarjeta para voltearla y revisar su definición exacta antes de presentar los cuestionarios o el examen global.
+            </p>
+          </div>
+
+          <div class="flashcards-grid" id="flashcards-container">
+            <!-- Inyectado dinámicamente por app.js -->
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast de Notificaciones -->
+  <div class="app-toast" id="app-toast">
+    <i class="fas fa-check-circle" id="toast-icon" style="color: #34d399;"></i>
+    <span id="toast-text">Acción completada</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
